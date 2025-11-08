@@ -230,5 +230,13 @@ const observer = new MutationObserver(() => {
 	insertTweetSearchLink();
 });
 
+chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === "local" && changes.searchKeywords) {
+        // storage が更新されたので、UI を再構築
+        loadedInfo.userName = "";   // 強制的に再挿入を許可
+        insertTweetSearchLink();
+    }
+});
+
 // X は全DOMが差し替わるため body 全体を監視
 observer.observe(document.body, {childList: true,subtree: true});
