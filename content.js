@@ -12,6 +12,62 @@ const DEFAULTS = {
 };
 //==============================================================
 
+// ===============================
+//  context 安全化レイヤー
+// ===============================
+let contextAlive = true;
+
+// context が生きている時だけ実行する安全ラッパー
+function safe(fn) {
+	if (!contextAlive) return;
+	try {
+		fn();
+	} catch (e) {
+		// context が死んでいるとここに来る
+		// console.warn("safe blocked:", e);
+	}
+}
+
+// SPA がページ遷移する時に context が無効になる
+window.addEventListener("pagehide", () => {
+	contextAlive = false;
+});
+window.addEventListener("beforeunload", () => {
+	contextAlive = false;
+});
+window.addEventListener("unload", () => {
+	contextAlive = false;
+});
+
+// ===============================
+// ストレージキャッシュ
+// ===============================
+let storageCashe = {
+	searchKeywords: [],
+};
+
+// ストレージの初回ロード
+chrome.storage.local.get(["searchKeywords"], (res) => {
+	storageCashe.searchKeywords = res.searchKeywords || DEFAULTS.searchKeywords;
+});
+
+// ストレージ変更監視
+chrome.storage.onChanged.addListener((changes, area) => {
+	safe(() => {
+		if (area === "local" && changes.searchKeywords) {
+			storageCashe.searchKeywords = changes.searchKeywords.newValue || [];
+			loadedInfo.userName = "";  // リンク再注入のためリセット
+
+			// 変更反映
+			safe(() => {
+				insertTweetSearchLink();
+			});
+		}
+	});
+});
+
+// ===============================
+//  main処理// ===============================
 let loading = false;
 
 let loadedInfo = {
@@ -27,48 +83,44 @@ function insertTweetSearchLink() {
 	if (loading) return;
 	loading = true;
 
-	// storage から検索ワード配列を取得
-	chrome.storage.local.get({ searchKeywords: DEFAULTS.searchKeywords }, (items) => {
+	try {
 
-		try {
+		// キーワード有無判定
+		const keywords = storageCashe.searchKeywords;
+		if (!Array.isArray(keywords) || keywords.length === 0) return;
 
-			// キーワード有無判定
-			const keywords = items.searchKeywords;
-			if (!Array.isArray(keywords) || keywords.length === 0) return;
+		// 挿入可否判定
+		const userName = getUserName();
+		if(!canInsert(userName)) return;
+		if(handleSameUserInsertion(userName)) return;
 
-			// 挿入可否判定
-			const userName = getUserName();
-			if(!canInsert(userName)) return;
-			if(handleSameUserInsertion(userName)) return;
+		// 挿入済みリンクを削除　※ユーザーが変わった時に残っている場合がある
+		removeUeSearchContainer();
 
-			// 挿入済みリンクを削除　※ユーザーが変わった時に残っている場合がある
-			removeUeSearchContainer();
+		// リンクコンテナ
+		const container = document.createElement("div");
+		container.className = "skeb-ue-search-container";
 
-			// リンクコンテナ
-			const container = document.createElement("div");
-			container.className = "skeb-ue-search-container";
+		// オプション
+		const opt = createOptionsLink();
+		container.appendChild(opt);
 
-			// オプション
-			const opt = createOptionsLink();
-			container.appendChild(opt);
+		// 検索リンク
+		keywords.forEach(word => {
+			const link = createUeSearchLink(userName, word);
+			container.appendChild(link);
+		});
 
-			// 検索リンク
-			keywords.forEach(word => {
-				const link = createUeSearchLink(userName, word);
-				container.appendChild(link);
-			});
+		// プロフに追加
+		insertLinkContainer(container);
+		
+		// 情報更新
+		loadedInfo.userName = userName;
+		loadedInfo.container = container;
 
-			// プロフに追加
-			insertLinkContainer(container);
-			
-			// 情報更新
-			loadedInfo.userName = userName;
-			loadedInfo.container = container;
-
-		} finally {
-			loading = false;
-		}
-	});
+	} finally {
+		loading = false;
+	}
 }
 
 //------------------------------
@@ -227,15 +279,9 @@ function removeUeSearchContainer() {
 // MutationObserver：SPA・再描画対策
 //------------------------------
 const observer = new MutationObserver(() => {
-	insertTweetSearchLink();
-});
-
-chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === "local" && changes.searchKeywords) {
-        // storage が更新されたので、UI を再構築
-        loadedInfo.userName = "";   // 強制的に再挿入を許可
-        insertTweetSearchLink();
-    }
+	safe(() => {
+		insertTweetSearchLink();
+	});
 });
 
 // X は全DOMが差し替わるため body 全体を監視
