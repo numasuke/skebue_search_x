@@ -1,0 +1,32 @@
+{
+	"manifest_version": 3,
+	"name": "SkebUe - Search for X",
+	"version": "1.0.0",
+	"description": "【Skeb非公式拡張】X（旧Twitter）のプロフィールに投稿検索ボタンを追加します。【前提】使用にはSkeb公式拡張『Skeb Button』の導入が必要です。",
+	"icons":
+	{
+		"16":"images/icon16.png",
+		"48":"images/icon48.png",
+		"128":"images/icon128.png"
+	},
+	"permissions": ["storage"],
+	"background": {
+		"service_worker": "background.js"
+	},
+	"action": {},
+	"content_scripts": [
+		{
+			"matches": ["https://x.com/*", "https://twitter.com/*"],
+			"js": ["content.js"],
+			"css": ["content.css"],
+			"run_at": "document_end"
+		}
+ 
+	],
+	"web_accessible_resources": [
+		{
+			"matches": ["https://x.com/*", "https://twitter.com/*"],
+			"resources": [ "images/*.png"]
+		}
+	]
+}

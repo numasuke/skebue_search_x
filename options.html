@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>SkebUe - Search for X</title>
+	<link rel="stylesheet" href="options.css">
+</head>
+<body>
+	<h1>⚙️<ruby>SkebUe<rt>スケベ</rt></ruby> - <ruby>Search<rt>サーチ</rt></ruby> for X</h1>
+<!--設定 -->
+	<h2>検索ワード設定（最大10個）　<button id="reset">リセット</button></h2>
+	<input class="kw" type="text" placeholder="検索ワード">
+	<input class="kw" type="text" placeholder="検索ワード">
+	<input class="kw" type="text" placeholder="検索ワード">
+	<input class="kw" type="text" placeholder="検索ワード">
+	<input class="kw" type="text" placeholder="検索ワード">
+	<input class="kw" type="text" placeholder="検索ワード">
+	<input class="kw" type="text" placeholder="検索ワード">
+	<input class="kw" type="text" placeholder="検索ワード">
+	<input class="kw" type="text" placeholder="検索ワード">
+	<input class="kw" type="text" placeholder="検索ワード">
+	<br>
+	<button id="save">保存</button>
+	<span id="status"></span>
+	<br><br>
+	<p class="note">
+		【💡検索ワードの書き方】<br>
+		・AND検索：スペースで区切る<br>
+		・OR検索：ORで区切る　→ B <code>OR</code> C<br>
+		・組み合わせ例：A <code>(B OR C)</code>
+	</p>
+
+<!--概要など -->
+	<h2>概要</h2>
+	<p>
+		Skeb非公式拡張 - X検索。<br>
+		<br>
+		SkebユーザーのX（旧Twitter）プロフィールにリンクボタンを追加。<br>
+		ワンクリックで「from:ユーザーID + 検索ワード」の検索をできるようにします。
+	</p>
+	<p class="note">
+		【💡前提】<br>
+		Skeb公式拡張『Skeb Button』の導入が必要です。
+	</p>
+	<h3>使い方</h3>
+	プロフィールページで自動実行。<br>
+	Skeb Buttonの下に検索用ボタンが表示されます。<br>
+	Skeb Buttonが無い（Skeb未登録）場合は表示しません。<br>
+	<p class="note">
+		【💡トラブルシューティング】<br>
+		拡張の導入直後はボタンが表示されない場合があります。<br>
+		Xを🔄再読み込み（F5）してください。
+	</p>
+	<h3>その他</h3>
+	アイコンにSkebのロゴを使用しています。<br>
+	<br>
+	<a target="_blank" href="https://x.com/skeb_jp/status/1527590821477789699">https://x.com/skeb_jp/status/1527590821477789699</a><br>
+	＞またロゴにつきましてはサービスを毀損する目的でない限り自由に二次利用ください。<br>
+
+<!--JS -->
+	<script src="options.js"></script>
+</body>
+</html>

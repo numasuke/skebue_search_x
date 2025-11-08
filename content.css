@@ -1,0 +1,33 @@
+/* リンク全体をまとめるコンテナ */
+.skeb-ue-search-container {
+	display: flex;
+	gap: 4px;
+	flex-wrap: wrap;	  /* 折り返し可 */
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+
+/* 個々の検索リンク */
+.skeb-ue-search-link {
+	display: inline;
+	padding: 4px;
+
+	color: rgb(29, 155, 240);
+	text-decoration: none;
+	font-size: 14px;
+
+	transition: background-color 0.12s ease;
+	cursor: pointer;
+
+	white-space: nowrap;
+}
+
+/* hover 時 */
+.skeb-ue-search-link:hover {
+	text-decoration: underline;
+	text-decoration-style:solid;
+	text-decoration-thickness:auto;
+
+	background-color: rgba(29, 240, 155, 0.05);
+}
+
